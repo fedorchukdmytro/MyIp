@@ -2,9 +2,9 @@ name: Flow_Tests
 on:
   push:
     branches:
-      - main
-  
-  
+      - main 
+      - master
+
 jobs:
   build:
     runs-on: ubuntu-latest
