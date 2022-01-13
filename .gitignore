@@ -127,3 +127,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.bash_history
+.bashrc
+.gitconfig
+.profile
+.pyats/
+.python_history
+.vscode-server/
+.wget-hsts
+output.json
+task_example.py

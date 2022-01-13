@@ -1,9 +1,11 @@
 from pathlib import Path
 import os
-from . import test_path
+
+
+# from py_job import test_path
 
 import logging
-import subprocess
+
 from pyats import aetest
 
 logger = logging.getLogger(__name__)
@@ -17,7 +19,7 @@ class tc_one(aetest.Testcase):
 
     @aetest.test
     def is_there_file(self):
-       assert os.path.join(test_path, 'server.py').is_file() == True
+       assert os.path.isfile('output.json')  == True
 
     @aetest.cleanup
     def clean_testcase(self):
@@ -25,18 +27,4 @@ class tc_one(aetest.Testcase):
 
 # if __name__ == '__main__': # pragma: no cover
 #     aetest.main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-os.path.join(test_path, 'server.py').is_file() == True
    
