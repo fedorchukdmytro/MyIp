@@ -32,6 +32,9 @@ jobs:
         pip install paramiko
     
     - name: PyTS run
+      env:
+        PASSWORD: PASSWORD
+      
       run: |
         pyats run job py_job.py
     
