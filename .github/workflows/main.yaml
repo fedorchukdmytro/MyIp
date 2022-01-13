@@ -21,7 +21,8 @@ jobs:
       with:
         python-version: 3.9
     - name: Test env vars for python
-      run: PASSWORD=${{secrets.PASSWORD}} 
+      env: 
+        PASSWORD: ${{ secrets.PASSWORD }} 
       
     - name: Set up iperf3
       run: |

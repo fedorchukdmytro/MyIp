@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 import time
 import os
 
-PASSWORD = (os.environ['PASSWORD'])
+PASSWORD = os.environ['PASSWORD']
 
 parameters ={}
 
