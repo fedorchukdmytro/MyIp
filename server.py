@@ -4,8 +4,7 @@ from pyats import aetest
 import paramiko
 logger = logging.getLogger(__name__)
 import time
-from dotenv import load_dotenv
-  # take environment variables from .env.
+f
 
 parameters ={}
 
