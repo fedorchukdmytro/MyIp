@@ -15,6 +15,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+        PASSWORD: ${{secrets.PASSWORD}}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
@@ -32,8 +34,7 @@ jobs:
         pip install paramiko
     
     - name: PyTS run
-      env:
-        PASSWORD: PASSWORD
+      
       
       run: |
         pyats run job py_job.py
