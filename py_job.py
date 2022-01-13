@@ -6,14 +6,15 @@ def main():
     test_path = os.path.dirname(os.path.abspath(__file__))
    
     task_1 = Task(testscript = os.path.join(test_path, 'server.py'))
-    task_2 = Task(testscript = os.path.join(test_path, 'client.py'))
+    # task_2 = Task(testscript = os.path.join(test_path, 'client.py'))
     
    
     task_1.start()
-    task_2.start()
+    
+    # task_2.start()
     
     task_1.wait()
-    task_2.wait()
+    # task_2.wait()
 
     task_3 = Task(testscript = os.path.join(test_path, 'test.py'))
     
