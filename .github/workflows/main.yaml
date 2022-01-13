@@ -22,11 +22,9 @@ jobs:
     - name: Set up pyATS    
       run: |
         pip install pyats[full]
-    
     - name: PyTS run
       run: |
         pyats run job py_job.py
-    
     - name: 'Upload Artifact'
        uses: actions/upload-artifact@v2
        with:
