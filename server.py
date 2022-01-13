@@ -4,7 +4,9 @@ from pyats import aetest
 import paramiko
 logger = logging.getLogger(__name__)
 import time
+import os
 
+PASSWORD = (os.environ['PASSWORD'])
 
 parameters ={}
 

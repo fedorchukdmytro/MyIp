@@ -14,16 +14,15 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
-    env:
-        PASSWORD: ${{secrets.PASSWORD}}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-    
+    - name: Test env vars for python
+      run: PASSWORD=${{ secrets.PASSWORD}} python -c 'import os;print(os.environ['PASSWORD'])
+   
     - name: Set up iperf3
       run: |
         sudo apt-get update
