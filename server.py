@@ -4,7 +4,7 @@ from pyats import aetest
 import paramiko
 logger = logging.getLogger(__name__)
 import time
-f
+
 
 parameters ={}
 
@@ -12,7 +12,7 @@ class tc_one(aetest.Testcase):
     
     @aetest.setup
     def prepare_testcase(self, section):
-        load_dotenv()
+        
         logger.info("Preparing the test")
         logger.info(section)
         # server = subprocess.Popen("ssh {user}@{host} {cmd}".format(user='dmytrofedorchuk', host='172.22.35.18', cmd='-s'))     #, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
