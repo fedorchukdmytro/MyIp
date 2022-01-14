@@ -45,7 +45,7 @@ jobs:
         pip install paramiko
     - name: PyTS run
       run: |
-        pyats run job py_job.py
+        /opt/hostedtoolcache/Python/3.9.9/x64/bin/pyats run job py_job.py
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
       with:
