@@ -12,23 +12,23 @@ on:
 
 jobs:
   
-  ssh:
-    runs-on: ubuntu-latest
+#   ssh:
+#     runs-on: ubuntu-latest
     
-    steps:
-    - uses: actions/checkout@v2
-    - name: Common set up
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y openssh-server
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: Common set up
+#       run: |
+#         sudo apt-get update
+#         sudo apt-get install -y openssh-server
          
-     - name: Set up iperf3
-       run: |
-         sudo apt-get install iperf3
-         sudo apt-get install iproute2 
-     - name: Define IP server
-       run: |
-         echo SERV_IP=$(ip -4 route show default | cut -d' ' -f3) >> $GITHUB_ENV
+#     - name: Set up iperf3
+#        run: |
+#          sudo apt-get install iperf3
+#          sudo apt-get install iproute2 
+#      - name: Define IP server
+#        run: |
+#          echo SERV_IP=$(ip -4 route show default | cut -d' ' -f3) >> $GITHUB_ENV
   
   build:
 
