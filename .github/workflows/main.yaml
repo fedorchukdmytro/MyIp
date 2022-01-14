@@ -13,7 +13,6 @@ on:
 jobs:
   
   ssh:
-    
     runs-on: ubuntu-latest
     
     steps:
