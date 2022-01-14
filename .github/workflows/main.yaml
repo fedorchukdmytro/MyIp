@@ -24,6 +24,7 @@ jobs:
     - name: Define IP server
       run: |
           echo SERV_IP=$(ip -4 route show default | cut -d' ' -f3) >> $GITHUB_ENV
+          echo $GITHUB_ENV
     
     
   build:   
