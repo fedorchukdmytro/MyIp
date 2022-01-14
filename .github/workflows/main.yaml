@@ -41,7 +41,7 @@ jobs:
     - name: Set up pyATS    
       run: |
         pip install pyats[full]
-        echo which pyats
+        which pyats
         pip install paramiko
     - name: PyTS run
       run: |
