@@ -1,4 +1,5 @@
 name: Flow_Tests
+
 on:
   push:
     branches:
@@ -7,32 +8,34 @@ on:
   pull_request:
     branches:
       - main
+
+
 jobs:
-  
   build:
-    
+
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
+      
     - name: Set up iperf3
       run: |
         sudo apt-get update
         sudo apt-get install iperf3
-    - name: Show Server IP
-      run: |
-        echo "${{ env.SERV_IP }}"
     - name: Set up pyATS    
       run: |
         pip install pyats[full]
-        which pyats
-         pip install paramiko
+        pip install paramiko
+    
     - name: PyTS run
+      env: 
+        PASSWORD: ${{ secrets.PASSWORD }} 
       run: |
-         pyats run job py_job.py
-         
+        pyats run job py_job.py
+    
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
       with:
