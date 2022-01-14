@@ -1,5 +1,4 @@
 name: Flow_Tests
-
 on:
   push:
     branches:
@@ -8,34 +7,46 @@ on:
   pull_request:
     branches:
       - main
-
-
 jobs:
-  build:
-
+  job1:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Common set up
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openssh-server 
+    - name: Set up iperf3
+      run: |
+         sudo apt-get install iperf3
+         sudo apt-get install iproute2 
+    - name: Define IP server
+      run: |
+         echo SERV_IP=$(ip -4 route show default | cut -d' ' -f3) >> $GITHUB_ENV
+  build:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-      
     - name: Set up iperf3
       run: |
         sudo apt-get update
         sudo apt-get install iperf3
+    - name: Show Server IP
+      run: |
+        echo "${{ env.SERV_IP }}"
     - name: Set up pyATS    
       run: |
         pip install pyats[full]
-        pip install paramiko
-    
+        which pyats
+         pip install paramiko
     - name: PyTS run
-      env: 
-        PASSWORD: ${{ secrets.PASSWORD }} 
       run: |
-        pyats run job py_job.py
-    
+         pyats run job py_job.py
+         
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v2
       with:
