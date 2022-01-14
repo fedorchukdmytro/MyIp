@@ -23,7 +23,7 @@ jobs:
     - name: Setup iperf3
       run: |
         sudo apt-get install iperf3
-        sudo apt-get install ipriuter2
+        sudo apt-get install iprouter2
 
     - name: Define Server IP
       run: |
