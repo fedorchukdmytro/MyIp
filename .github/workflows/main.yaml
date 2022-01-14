@@ -12,7 +12,7 @@ on:
 
 jobs:
   
-  job1:
+  ssh:
     
     runs-on: ubuntu-latest
     
