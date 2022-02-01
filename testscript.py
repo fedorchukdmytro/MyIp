@@ -13,7 +13,7 @@ parameters = {}
 
 class CommonSetup(aetest.CommonSetup):
     @aetest.subsection
-    def common_setup_params_server(self, cc_param_a, cc_param_b, IPAddress, UserName, password, server_command):
+    def common_setup_params_server(self, IPAddress, UserName, password, server_command):
         logger.info('>>>>>>>>>>>>>>>>>>>>>>>>Lounching SSH with paramiko<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
         ssh_client = paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
