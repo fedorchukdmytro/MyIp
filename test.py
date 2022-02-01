@@ -16,8 +16,8 @@ class tc_one(aetest.Testcase):
     def assert_test(self):
         with open('output.json', 'r') as data_file:
             data = json.load(data_file)
-            assert (data['end']['streams'][0]['receiver']['bytes'] / 1000000) > 40
-            assert (data['end']['streams'][0]['receiver']['bits_per_second'] / 1000000) > 5
+            assert (data['end']['streams'][0]['receiver']['bytes'] / 10000) > 20
+            assert (data['end']['streams'][0]['receiver']['bits_per_second'] / 1000000) > 3
     @aetest.cleanup
     def clean_testcase(self):
         logger.info("Pass testcase cleanup")

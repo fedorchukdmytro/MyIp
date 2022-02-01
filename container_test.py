@@ -6,4 +6,3 @@ with open('output.json', 'w') as f:
 client_process.wait()
 # ssh_client.close()
 
-
