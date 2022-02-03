@@ -14,14 +14,6 @@ import time
 
 logger = logging.getLogger(__name__)
 
-
-
-
-
-
-
-
-
 parameters = {}
 
 t = xtelnet.session()
