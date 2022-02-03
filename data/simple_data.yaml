@@ -5,20 +5,23 @@ module_var_b: 99999
 parameters:
     script_param_a : 3.1415926
     script_param_b : 2016-01-01
-    IPAddress      : 172.22.35.18
-    UserName       : dmytrofedorchuk
+    IPAddress      : 10.0.0.1
+    UserName       : fdmytro
     password       : eternity
 
 common_setup:
     parameters:
         cc_param_a: 3
         cc_param_b: 4
-        server_command: /opt/homebrew/bin/iperf3 -s -1
+        server_command: iperf3 -s -1
         util  : iperf3
         flag1 : -c
         flag2 : -J
         flag3 : -t
-        flag4 : '60'
+        flag4 : '10'
+        flag5 : -u
+        
+
 
 testcases:
     MyTestcase:
