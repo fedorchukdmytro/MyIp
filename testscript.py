@@ -25,7 +25,7 @@ class CommonSetup(aetest.CommonSetup):
     def common_telnet(self, t):
         logger.info('>>>>>>>>>>>>>>>>>>>>>>>>TELNET<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
         ip = '10.0.0.3'
-        t.connect(ip, username='root', password='danya', p=23, timeout=10)
+        t.connect(ip, username='root', password='danya', p=23, timeout=1)
         output1 = t.execute('timeout -t 62 tcpdump -i br0 -nn host 10.0.0.10 and udp -w tcpdump_out.pcap')
         print(output1)        
         
@@ -132,9 +132,6 @@ class MyTestcase(aetest.Testcase):
         assert (data2['end']['streams'][0]['receiver']['bits_per_second'] / 1000000) > 5
         print(data2)
         t.execute('tftp -pl tcpdump_outTCP.pcap 10.0.0.1')
-       
-        
-        
 
 class ScriptCommonCleanup(aetest.CommonCleanup):
     @aetest.subsection
@@ -146,11 +143,6 @@ class ScriptCommonCleanup(aetest.CommonCleanup):
         ssh_client.close()
         t.close()
 
-
-
-
-
-
-if __name__ == '__main__': # pragma: no cover
+if __name__ == '__main__':
     logging.root.setLevel(logging.INFO)
     aetest.main()
