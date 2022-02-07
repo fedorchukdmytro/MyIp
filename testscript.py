@@ -51,15 +51,7 @@ class CommonSetup(aetest.CommonSetup):
         client_process = subprocess.Popen([util, flag1, IPAddress, flag5, flag2, flag3, flag4], stdout=PIPE, stderr=PIPE)
         client_process.wait()
         parameters.update({'client_process': client_process })    
-        parameters.update({'IPAddress': IPAddress})
-        parameters.update({'util': util })
-        parameters.update({'IPAddress': IPAddress })
-        parameters.update({'flag1': flag1 })
-        parameters.update({'flag2': flag2 })
-        parameters.update({'flag3': flag3})
-        parameters.update({'flag4': flag4 })
-       
-
+      
 class MyTestcase(aetest.Testcase):
 
     @aetest.test
@@ -111,7 +103,7 @@ class MyTestcase(aetest.Testcase):
         assert sys.getsizeof('tcpdump_out.pcap') > 60
 
     @aetest.test
-    def second_text(self, ssh_client):
+    def second_iperf_server_start(self, ssh_client):
         logger.info('|||||||||||||||||||||||||||||||||||||||||||||||||||  THIS IS A SECOND TEST ||||||||||||||||||||||||||||||||||||||||||||')
         serv_stdin1, serv_stdout1, serv_sterr1 = ssh_client.exec_command('iperf3 -s -1')
         parameters.update({'serv_stdout1': serv_stdout1 })
@@ -121,19 +113,24 @@ class MyTestcase(aetest.Testcase):
         
 
     @aetest.test
-    def second_test_start_ipef_and_telnet_againe(self, IPAddress, util, flag1, flag2, flag3, flag4, t ):
-        logger.info('>>>>>>>>>>>>>>>>>>>>>>>>Lounching iperf client with subprocess<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
-        
-        t.execute('timeout -t 62 tcpdump -i br0 -nn host 10.0.0.10 and tcp -w tcpdump_outTCP.pcap')
-        
+    def second_telnet_launch(self, t):
+        logger.info('>>>>>>>>>>>>>>>>>>>>>>>>  second launch TELNET<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+        output2 = t.execute('timeout -t 62 tcpdump -i br0 -nn host 10.0.0.10 and tcp -w tcpdump_outTCP.pcap')
+        print(output2)
+
+    @aetest.test
+    def second_ipers_server_launch(self, IPAddress, util, flag1, flag2, flag3, flag4, t ):
         client_process2 = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4], stdout=PIPE, stderr=PIPE)
         client_process2.wait()
         data2 = json.loads(client_process2.stdout.read().decode('ascii').strip("\n"))
+        # parameters.update({'client_process2': client_process2 })  
+        parameters.update({'data2': data2})
+
+    @aetest.test
+    def second_control_speed_test(self, data2):   
         assert (data2['end']['streams'][0]['receiver']['bytes'] / 1000000) > 20
         assert (data2['end']['streams'][0]['receiver']['bits_per_second'] / 1000000) > 5
-        
         print(data2)
-           
         t.execute('tftp -pl tcpdump_outTCP.pcap 10.0.0.1')
        
         
@@ -149,7 +146,7 @@ class ScriptCommonCleanup(aetest.CommonCleanup):
         ssh_client.close()
         t.close()
 
-gir sta
+
 
 
 
