@@ -8,20 +8,8 @@ parameters:
     IPAddress      : 10.0.0.1
     UserName       : fdmytro
     password       : eternity
-<<<<<<< HEAD
 
-common_setup:
-    parameters:
-        cc_param_a: 3
-        cc_param_b: 4
-        server_command: iperf3 -s -1 
-        util  : iperf3
-        flag1 : -c
-        flag2 : -J
-        flag3 : -t
-        flag4 : '10'
-        flag5 : -u
-=======
+
     cc_param_a: 3
     cc_param_b: 4
     server_command: iperf3 -s -1
@@ -31,7 +19,7 @@ common_setup:
     flag3 : -t
     flag4 : '60'
     flag5 : -u
->>>>>>> 9a5de25b2aec95b1cbc382234e76f52c470442c1
+
         
 
 
