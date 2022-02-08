@@ -10,7 +10,7 @@ import json
 import xtelnet
 import sys
 import time
-
+import multiprocessing
 
 logger = logging.getLogger(__name__)
 
@@ -93,15 +93,16 @@ class MyTestcase(aetest.Testcase):
 
 
     @aetest.test
-    def verifying_tcpdump_out_pcap_getsizeof(self, sftp):
+    def verifying_tcpdump_out_pcap_getsizeof(self, ssh_client, sftp):
         logger.info('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>pulling the file into CONTAINER OMG<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
         # ftp_client.get('/srv/tftp/tcpdump_out.pcap','/pyats/MyIp_SSH_to_myMac/tcpdump_out.pcap')    
         # subprocess.run('scp fdmytro@10.0.0.1:/srv/tftp/tcpdump_out.pcap /pyats/MyIp_SSH_to_myMac/tcpdump_out.pcap')
-        # ssh_client.exec_command('scp fdmytro@10.0.0.1:/srv/tftp/tcpdump_out.pcap /pyats/MyIp_SSH_to_myMac/tcpdump_out.pcap')
+        # ssh_client.exec_command('scp fdmytro@10.0.0.1:/srv/tftp/tcpdump_out.pcap /app/tcpdump_out.pcap')
         localpath = 'tcpdump_out.pcap'
         remotepath = '/srv/tftp/tcpdump_out.pcap'
-        sftp.get(remotepath, localpath)
-        
+        p1 = multiprocessing.Process(target= (sftp.get(remotepath, localpath)))
+        p1.start()
+        p1.join()
         print(sys.getsizeof('tcpdump_out.pcap'))
         assert sys.getsizeof('tcpdump_out.pcap') > 60
 

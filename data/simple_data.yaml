@@ -13,7 +13,7 @@ common_setup:
     parameters:
         cc_param_a: 3
         cc_param_b: 4
-        server_command: iperf3 -s -1
+        server_command: iperf3 -s -1 
         util  : iperf3
         flag1 : -c
         flag2 : -J
