@@ -25,8 +25,8 @@ class CommonSetup(aetest.CommonSetup):
     def common_telnet(self, t):
         logger.info('>>>>>>>>>>>>>>>>>>>>>>>>TELNET<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
         ip = '10.0.0.3'
-        t.connect(ip, username='root', password='danya', p=23, timeout=10)
-        output1 = t.execute('tcpdump -i br0 -nn host 10.0.0.10 and udp -c 500 -w tcpdump_out.pcap')
+        t.connect(ip, username='root', password='danya', p=23, timeout=1)
+        output1 = t.execute('timeout -t 62 tcpdump -i br0 -nn host 10.0.0.10 and udp -w tcpdump_out.pcap')
         print(output1)        
         
     
@@ -51,9 +51,7 @@ class CommonSetup(aetest.CommonSetup):
         client_process = subprocess.Popen([util, flag1, IPAddress, flag5, flag2, flag3, flag4], stdout=PIPE, stderr=PIPE)
         client_process.wait()
         parameters.update({'client_process': client_process })    
-
-                       
-
+      
 class MyTestcase(aetest.Testcase):
 
     @aetest.test
@@ -91,7 +89,6 @@ class MyTestcase(aetest.Testcase):
         logger.info('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>client standart error<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
         assert client_process.stderr.readlines() == []
 
-
     @aetest.test
     def verifying_tcpdump_out_pcap_getsizeof(self, ssh_client, sftp):
         logger.info('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>pulling the file into CONTAINER OMG<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
@@ -106,17 +103,47 @@ class MyTestcase(aetest.Testcase):
         print(sys.getsizeof('tcpdump_out.pcap'))
         assert sys.getsizeof('tcpdump_out.pcap') > 60
 
+    @aetest.test
+    def second_iperf_server_start(self, ssh_client):
+        logger.info('|||||||||||||||||||||||||||||||||||||||||||||||||||  THIS IS A SECOND TEST ||||||||||||||||||||||||||||||||||||||||||||')
+        serv_stdin1, serv_stdout1, serv_sterr1 = ssh_client.exec_command('iperf3 -s -1')
+        parameters.update({'serv_stdout1': serv_stdout1 })
+        parameters.update({'serv_stdin1': serv_stdin1 })
+        parameters.update({'serv_sterr1': serv_sterr1 })
+        # logger.info(serv_stdout1.read().decode('ascii').strip("\n"))
+        
+
+    @aetest.test
+    def second_telnet_launch(self, t):
+        logger.info('>>>>>>>>>>>>>>>>>>>>>>>>  second launch TELNET<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+        output2 = t.execute('timeout -t 62 tcpdump -i br0 -nn host 10.0.0.10 and tcp -w tcpdump_outTCP.pcap')
+        print(output2)
+
+    @aetest.test
+    def second_ipers_server_launch(self, IPAddress, util, flag1, flag2, flag3, flag4, t ):
+        client_process2 = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4], stdout=PIPE, stderr=PIPE)
+        client_process2.wait()
+        data2 = json.loads(client_process2.stdout.read().decode('ascii').strip("\n"))
+        # parameters.update({'client_process2': client_process2 })  
+        parameters.update({'data2': data2})
+
+    @aetest.test
+    def second_control_speed_test(self, data2):   
+        assert (data2['end']['streams'][0]['receiver']['bytes'] / 1000000) > 20
+        assert (data2['end']['streams'][0]['receiver']['bits_per_second'] / 1000000) > 5
+        print(data2)
+        t.execute('tftp -pl tcpdump_outTCP.pcap 10.0.0.1')
+
 class ScriptCommonCleanup(aetest.CommonCleanup):
     @aetest.subsection
     def disconnect_from_devices(self, ssh_client, t, sftp):
         logger.info("Pass testcase cleanup")
-        output2 = t.execute('tftp -pl tcpdump_out.pcap 10.0.0.1')
-        print(output2)
-        output3 = t.execute('rm tcpdump_out.pcap')
-        print(output3)
+        t.execute('rm tcpdump_outTCP.pcap')
+        t.execute('rm tcpdump_out.pcap')
         sftp.close()
         ssh_client.close()
         t.close()
-if __name__ == '__main__': # pragma: no cover
+
+if __name__ == '__main__':
     logging.root.setLevel(logging.INFO)
     aetest.main()

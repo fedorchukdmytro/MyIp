@@ -138,3 +138,5 @@ dmypy.json
 .wget-hsts
 output.json
 task_example.py
+.ssh
+__pycache__/
