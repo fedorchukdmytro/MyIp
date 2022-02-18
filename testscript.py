@@ -320,7 +320,7 @@ class MYTESTSUITE(aetest.Testcase):
                 else:
                     step.failed("File is not preset ...")
         
-        bridge = t2.execute('cd / && sh ./script2.sh')
+       
         
         parameters.update({'t2': t2})
   
