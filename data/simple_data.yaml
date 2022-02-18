@@ -1,36 +1,33 @@
 
-module_var_a: some string value
-module_var_b: 99999
+
 
 parameters:
-    script_param_a : 3.1415926
-    script_param_b : 2016-01-01
-    IPAddress      : 10.0.0.1
+    IPAddress      : 10.0.0.10
     UserName       : fdmytro
     password       : eternity
-
-
-    cc_param_a: 3
-    cc_param_b: 4
-    server_command: iperf3 -s -1
+    BBB_ip_addreess: '10.0.0.3'
+    BBB_user_name: 'root'
+    BBB_user_passwd: 'danya'
+    server_command: iperf3 -s -4
     util  : iperf3
     flag1 : -c
     flag2 : -J
     flag3 : -t
-    flag4 : '20'
+    flag4 : '10'
     flag5 : -u
 
         
 
 
-testcases:
-    MyTestcase:
-        uid: customized_id_from_datafile
-        groups: [demo, datafile, awesomeness]
+# testcases:
+#     TrafficCatpture:
+#         uid: MYTESTSUITE
+#         groups: [demo, datafile, awesomeness]
 
-        parameters:
-            tc_param_a: 300
-            tc_param_b: 400
+#         parameters:
+#             tc_param_a: 300
+#             tc_param_b: 400
 
-        class_var_a: [1,2,3,4,5]
-        class_var_b: datafile feature is just that awesome
+#         class_var_a: [1,2,3,4,5]
+#         class_var_b: datafile feature is just that awesome
+       

@@ -1,6 +1,10 @@
 
+# ser = serial.Serial("/dev/ttyACM0", 115200)
+# ser.close()
+
 import logging
 from logging.config import stopListening
+from datetime import datetime
 from socket import timeout
 import paramiko
 from pyats import aetest
@@ -8,9 +12,7 @@ import subprocess
 from subprocess import PIPE
 import json
 import xtelnet
-import sys
-import time
-import multiprocessing
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -49,16 +51,11 @@ class CommonSetup(aetest.CommonSetup):
         logger.info('>>>>>>>>>>>>>>>>>>>>>>>>TELNET<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
         ip = '10.0.0.3'
         t.connect(ip, username='root', password='danya', p=23, timeout=1)
-        output1 = t.execute('timeout -t 10 tcpdump -i br0 -nn -w tcpdump_out.pcap')
+        output1 = t.execute('timeout -t 10 tcpdump -i br0 -nn -w tcpdump_outUDP.pcap')
         print(output1)   
 
 
-
-
 class MyTestcase(aetest.Testcase):
-
-  
-       
 
     @aetest.test
     def verifying_server_stdout(self, serv_stdout):
@@ -76,6 +73,13 @@ class MyTestcase(aetest.Testcase):
         assert client_process.returncode == 0
         
      
+    
+
+    @aetest.test
+    def verifying_client_standart_error(self, client_process):
+        logger.info('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>client standart error<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+        assert client_process.stderr.readlines() == []
+
     @aetest.test
     def control_speed_test(self, client_process ):
         logger.info('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>assertion speed test<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
@@ -83,26 +87,16 @@ class MyTestcase(aetest.Testcase):
         assert (data['end']['streams'][0]['udp']['bytes'] / 1000) > 10
         assert (data['end']['streams'][0]['udp']['bits_per_second'] / 1000) > 10
         # print(data)
-        t.execute('tftp -pl tcpdump_out.pcap 10.0.0.1')
-
+        t.execute('tftp -pl tcpdump_outUDP.pcap 10.0.0.1')
+    
     @aetest.test
-    def verifying_client_standart_error(self, client_process):
-        logger.info('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>client standart error<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
-        assert client_process.stderr.readlines() == []
-
-    # @aetest.test
-    # def verifying_tcpdump_out_pcap_getsizeof(self, ssh_client, sftp):
-    #     logger.info('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>pulling the file into CONTAINER OMG<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
-    #     # ftp_client.get('/srv/tftp/tcpdump_out.pcap','/pyats/MyIp_SSH_to_myMac/tcpdump_out.pcap')    
-    #     # subprocess.run('scp fdmytro@10.0.0.1:/srv/tftp/tcpdump_out.pcap /pyats/MyIp_SSH_to_myMac/tcpdump_out.pcap')
-    #     # ssh_client.exec_command('scp fdmytro@10.0.0.1:/srv/tftp/tcpdump_out.pcap /app/tcpdump_out.pcap')
-    #     localpath = 'tcpdump_out.pcap'
-    #     remotepath = '/srv/tftp/tcpdump_out.pcap'
-    #     p1 = multiprocessing.Process(target= (sftp.get(remotepath, localpath)))
-    #     p1.start()
-    #     p1.join()
-    #     print(sys.getsizeof('tcpdump_out.pcap'))
-    #     assert sys.getsizeof('tcpdump_out.pcap') > 60
+    def verifying_file_consistensy(self, client_process):
+        file = os.stat('/srv/tftp/tcpdump_outTCP.pcap')
+        print('LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL')
+        print(datetime.fromtimestamp(file.st_mtime))
+        assert file.st_size > 1000
+        print(file.st_size)
+        print('LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL')
 
    
    
@@ -111,8 +105,7 @@ class ScriptCommonCleanup(aetest.CommonCleanup):
     @aetest.subsection
     def disconnect_from_devices(self, ssh_client, t, sftp):
         logger.info("Pass testcase cleanup")
-        
-        t.execute('rm tcpdump_out.pcap')
+        t.execute('rm tcpdump_outUDP.pcap')
         sftp.close()
         ssh_client.close()
         t.close()
