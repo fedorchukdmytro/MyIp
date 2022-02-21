@@ -37,28 +37,30 @@ class CommonSetup(aetest.CommonSetup):
         parameters.update({'serv_sterr': serv_sterr })
         
   
-      
-   
     @aetest.subsection
     def common_telnet_connection_with_BBB(self, BBB_ip_addreess, BBB_user_passwd, BBB_user_name):
         logger.info('>>>>>>>>>>>>>>>>>>>>>>>>TELNET<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
         t = xtelnet.session()
         ip = BBB_ip_addreess
-        t.connect(ip, username=BBB_user_name, password=BBB_user_passwd, p=23, timeout=5)
+        t.connect(ip, username=BBB_user_name, password=BBB_user_passwd, p=23, timeout=10)
         someoutput=t.execute('cd / && ls')
         parameters.update({'t':t}) 
+        logger.info(someoutput)
         
       
 class MYTESTSUITE(aetest.Testcase):
 
     @aetest.test
-    def traffic_capture_1(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t):
-        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4], stdout=PIPE, stderr=PIPE)
+    def traffic_capture_1(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t, traffic, traffic1, script):
         
-        tout = t.execute('sh ./scr2.sh')
+        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4, traffic, traffic1], stdout=PIPE, stderr=PIPE)
+        
+        tout = t.execute(f"sh {script}", read_retries=60)
+        
 
         data =json.loads(client_process.stdout.read().decode('ascii').strip("\n"))
-
+        client_process.wait()
+        
         with steps.start(
                 "Run command 'Iperf3 client"
             ) as step:
@@ -67,6 +69,10 @@ class MYTESTSUITE(aetest.Testcase):
                 else:
                     step.failed("Trafic is not running")
         
+        logger.info(tout[:60])
+        logger.info(tout)
+        logger.info(type(tout))
+        logger.info(len(tout))
         
         with steps.start(
                 "Run script.sh"
@@ -80,15 +86,15 @@ class MYTESTSUITE(aetest.Testcase):
         with steps.start(
                 "Wait 1 minute."
             ) as step:
-                if '/tcpdump_outTCP.pcap 100%' in tout[-100:-1]:
+                if 'tcpdump_out.pcap' and '100%'  in tout[-100:-1]:
                     step.passed(f"Output  = {tout[-100:-1]}.")
                 else:
                     step.failed("Scrip failed ")
         
-        client_process.wait()
-        t.execute('rm tcpdump_outTCP.pcap')
+        
+        t.execute('rm tcpdump_out.pcap')
 
-
+        
     @aetest.test
     def manual_start_2(self,steps, t):
         
@@ -106,38 +112,47 @@ class MYTESTSUITE(aetest.Testcase):
 
     
     @aetest.test
-    def tftp_transfer_verification_3(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t):
-        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4], stdout=PIPE, stderr=PIPE)
+    def tftp_transfer_verification_3(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t, traffic, traffic1, script):
+        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4, traffic, traffic1], stdout=PIPE, stderr=PIPE)
+        
+        tout = t.execute(f"sh {script}", read_retries=60)
+        
+
         data =json.loads(client_process.stdout.read().decode('ascii').strip("\n"))
+        client_process.wait()
         
-        teloutput3 = t.execute('sh ./scr2.sh')
-       
-        file = os.stat('/srv/tftp/tcpdump_outTCP.pcap')
-        
-    
+        logger.info(tout)
         with steps.start(
-               "Run command 'Iperf3 client"
+                "Run command 'Iperf3 client"
             ) as step:
                 if (data['end']['streams'][0]['receiver']['bits_per_second'] / 100) > 5:
                     step.passed(f"Traffic is running through the SUT.")
                 else:
                     step.failed("Trafic is not running")
         
+        logger.info(tout[:60])
+        logger.info(tout)
+        logger.info(type(tout))
+        logger.info(len(tout))
+        file = os.stat('/srv/tftp/tcpdump_outTCP.pcap')
         
         with steps.start(
                 "Run script.sh"
             ) as step:
-                if 'tcpdump: listening' in teloutput3[:60] :
-                    step.passed(f"Output  = {teloutput3[:60]}.")
+                if 'tcpdump: listening' in tout[:60] :
+                    step.passed(f"Output  = {tout[:60]}.")
                 else:
                     step.failed("tcpdump didn't start ")
 
         
+        
+        logger.info(tout[-100:-1])
+
         with steps.start(
                 "Wait 1 minute."
             ) as step:
-                if '/tcpdump_outTCP.pcap 100%' in teloutput3[-100:-1]:
-                    step.passed(f"Output  = {teloutput3[-100:-1]}.")
+                if 'tcpdump_out.pcap' and '100% ' in tout[-100:-1]:
+                    step.passed(f"Output  = {tout[-100:-1]}.")
                 else:
                     step.failed("Scrip failed ")
 
@@ -151,33 +166,38 @@ class MYTESTSUITE(aetest.Testcase):
         
         
         client_process.wait()
-        t.execute('rm tcpdump_outTCP.pcap')
+        t.execute('rm tcpdump_out.pcap')
         
    
-
-    
     @aetest.test
-    def Verification_of_the_messages_in_the_logs_7(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t):
-        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4], stdout=PIPE, stderr=PIPE)
-        data =json.loads(client_process.stdout.read().decode('ascii').strip("\n"))
-       
-        teloutput = t.execute('sh ./scr2.sh')
+    def Verification_of_the_messages_in_the_logs_7(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t, traffic, traffic1, script):
+        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4, traffic, traffic1], stdout=PIPE, stderr=PIPE)
         
-       
+        tout = t.execute(f"sh {script}", read_retries=60)
+    
+        data =json.loads(client_process.stdout.read().decode('ascii').strip("\n"))
+        client_process.wait()
+        
+        logger.info(tout)
         with steps.start(
-                "Run command Iperf3 client'"
+                "Run command 'Iperf3 client"
             ) as step:
                 if (data['end']['streams'][0]['receiver']['bits_per_second'] / 100) > 5:
                     step.passed(f"Traffic is running through the SUT.")
                 else:
                     step.failed("Trafic is not running")
         
+        logger.info(tout[:60])
+        logger.info(tout)
+        logger.info(type(tout))
+        logger.info(len(tout))
+        
         
         with steps.start(
                 "Run script.sh"
             ) as step:
-                if 'tcpdump: listening' in teloutput[:60] :
-                    step.passed(f"Output  = {teloutput[:60]}.")
+                if 'tcpdump: listening' in tout[:60] :
+                    step.passed(f"Output  = {tout[:60]}.")
                 else:
                     step.failed("Log with needed message did not appear")
 
@@ -185,66 +205,71 @@ class MYTESTSUITE(aetest.Testcase):
         with steps.start(
                 "Wait 1 minute"
             ) as step:
-                if '/tcpdump_outTCP.pcap 100%' in teloutput[-100:-1]:
-                    step.passed(f"Output  = {teloutput[-100:-1]}.")
+                if 'tcpdump_out.pcap' and '100%' in tout[-100:-1]:
+                    step.passed(f"Output  = {tout[-100:-1]}.")
                 else:
                     step.failed("Log with needed message did not appear")
        
        
-        client_process.wait()
-        t.execute('rm tcpdump_outTCP.pcap')
+        
+        t.execute('rm tcpdump_out.pcap')
 
 
 
     @aetest.test
     def Kernel_version_8(self, steps, t):
         kernel = t.execute('uname -r')
-       
+        logger.info(kernel)
         
         with steps.start(
                 "Run 'uname -r'"
             ) as step:
-                if kernel == '4.19.225':
+                if '4.19' in kernel:
                     step.passed(f"Verified that version of kernel appeared in log = {kernel}.")
                 else:
-                    step.failed("tcpdump didn't start ")
+                    step.failed("Wrong log")
 
       
       
       
     @aetest.test
-    def traffic_load_50_mb_9(self, t, steps, util, flag1, IPAddress, flag2, flag3, flag4):   
-        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4], stdout=PIPE, stderr=PIPE)
-        logger.info('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>assertion speed test<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+    def traffic_load_50_mb_9(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t, traffic, traffic1, script):   
+        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4, traffic, traffic1], stdout=PIPE, stderr=PIPE)
+        
+        tout = t.execute(f"sh {script}", read_retries=60)
+        
+
         data =json.loads(client_process.stdout.read().decode('ascii').strip("\n"))
-       
-        teloutput = t.execute('sh ./scr2.sh')
+        client_process.wait()
         
-       
-        
+        logger.info(tout)
         with steps.start(
-               "Run command 'Iperf3 client"
+                "Run command 'Iperf3 client"
             ) as step:
                 if (data['end']['streams'][0]['receiver']['bits_per_second'] / 100) > 5:
                     step.passed(f"Traffic is running through the SUT.")
                 else:
                     step.failed("Trafic is not running")
         
+        logger.info(tout[:60])
+        logger.info(tout)
+        logger.info(type(tout))
+        logger.info(len(tout))
         
         with steps.start(
                 "Run script.sh"
             ) as step:
-                if 'tcpdump: listening' in teloutput[:60] :
-                    step.passed(f"Output  = {teloutput[:60]}.")
+                if 'tcpdump: listening' in tout[:60] :
+                    step.passed(f"Output  = {tout[:60]}.")
                 else:
                     step.failed("tcpdump didn't start ")
 
-        
+        logger.info(tout[:60])
         with steps.start(
                 "Wait 1 minute."
             ) as step:
-                if 'tcpdump_outTCP.pcap 100%' in teloutput[-100:-1]:
-                    step.passed(f"Output  = {teloutput[-100:-1]}.")
+                if 'tcpdump_out.pcap' and '100% ' in tout[-100:-1]:
+                    step.passed(f"Output  = {tout[-100:-1]}.")
                 else:
                     step.failed("Scrip failed ")
         client_process.wait()
@@ -254,13 +279,11 @@ class MYTESTSUITE(aetest.Testcase):
         with steps.start(
                 "Run command 'ls -lah'"
             ) as step:
-                if 'tcpdump_outTCP.pcap' in tel:
+                if 'tcpdump_out.pcap' in tel:
                     step.passed(f"tcpdump_outTCP.pcap file with captured data is present in / folder with size greate than 0 bytes")
                 else:
                     step.failed("File is not preset ...")
-        
-        
-        client_process.wait()
+    
          
     @aetest.test
     def system_recover_10(self, t, steps, BBB_ip_addreess, BBB_user_name, BBB_user_passwd):
@@ -282,18 +305,19 @@ class MYTESTSUITE(aetest.Testcase):
                     step.passed(f"The device is rebooted")
                 else:
                     step.failed("System is not rebooted")
+        
         time.sleep(20)
         t2 = xtelnet.session()
         ip = BBB_ip_addreess
         t2.connect(ip, username=BBB_user_name, password=BBB_user_passwd, p=23, timeout=5)
-        bridge = t2.execute('cd / && sh ./script2.sh')
+        
         someoutput=t2.execute('cd / && ls -lah')
         logger.info(someoutput)
 
         with steps.start(
                 "Run 'ls -lah'"
             ) as step:
-                if 'tcpdump_outTCP.pcap' in someoutput:
+                if 'tcpdump_out.pcap' in someoutput:
                     step.passed(f"System recovered. File is present")
                 else:
                     step.failed("File is not preset ...")
@@ -307,7 +331,7 @@ class ScriptCommonCleanup(aetest.CommonCleanup):
     @aetest.subsection
     def disconnect_from_devices(self, t2, ssh_client):
         logger.info("Pass testcase cleanup")
-        t2.execute('rm tcpdump_outTCP.pcap')
+        t2.execute('rm tcpdump_out.pcap')
      
         ssh_client.close()
         t2.close()

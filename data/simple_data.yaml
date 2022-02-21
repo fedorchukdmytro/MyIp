@@ -7,15 +7,17 @@ parameters:
     password       : eternity
     BBB_ip_addreess: '10.0.0.3'
     BBB_user_name: 'root'
-    BBB_user_passwd: 'danya'
+    BBB_user_passwd: '1'
     server_command: iperf3 -s -4
     util  : iperf3
     flag1 : -c
     flag2 : -J
     flag3 : -t
-    flag4 : '10'
+    flag4 : '70'
     flag5 : -u
-
+    traffic : -b
+    traffic1 : '50000000'
+    script: '/bin/sniffer.sh'
         
 
 
