@@ -101,7 +101,7 @@ class MYTESTSUITE(aetest.Testcase):
                 if  tout.count('tcpdump') == 1:
                     step.passed(f"System is booted. No capturing process exists")
                 else:
-                    step.failed("Tcpdump started automatically")
+                    step.failed("Failed. Started automatically")
 
 
     
@@ -153,29 +153,7 @@ class MYTESTSUITE(aetest.Testcase):
         client_process.wait()
         t.execute('rm tcpdump_outTCP.pcap')
         
-    # @aetest.test
-    # def sniffing_process_interruption_4(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t, BBB_ip_addreess, BBB_user_name, BBB_user_passwd):
-    #     client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, '60'], stdout=PIPE, stderr=PIPE)
-    #     # data =json.loads(client_process.stdout.read().decode('ascii').strip("\n"))  
-    #     print(t.execute('ls -lah'))
-    #     teloutput3 = t.execute('sh ./scr2.sh')
-    #     # data =json.loads(client_process.stdout.read().decode('ascii').strip("\n"))  
-
-    #     t.execute('killall')
-    #     print(teloutput3[:60])
-    #     print(t.execute('ls -lah'))
-    #     # t.close()
-    #     # time.sleep(10)
-  
-    #     # t3 = xtelnet.session()
-    #     # ip = BBB_ip_addreess
-    #     # t3.connect(ip, username=BBB_user_name, password=BBB_user_passwd, p=23, timeout=5) 
-    #     # bridge = t3.execute('cd / && sh ./script2.sh')
-    #     # parameters.update({'t3': t3})
-    #     # teloutput = t3.execute('ls -lah')
-    #     # print(teloutput)
-
-    #     client_process.wait()
+   
 
     
     @aetest.test
@@ -294,7 +272,7 @@ class MYTESTSUITE(aetest.Testcase):
         except Exception:
             e = 'BBB rebooted'
             
-        print(e)
+        logger.info(e)
         t.close()
         
         with steps.start(
@@ -310,7 +288,7 @@ class MYTESTSUITE(aetest.Testcase):
         t2.connect(ip, username=BBB_user_name, password=BBB_user_passwd, p=23, timeout=5)
         bridge = t2.execute('cd / && sh ./script2.sh')
         someoutput=t2.execute('cd / && ls -lah')
-        print(someoutput)
+        logger.info(someoutput)
 
         with steps.start(
                 "Run 'ls -lah'"
