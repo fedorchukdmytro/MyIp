@@ -1,4 +1,3 @@
-
 import logging
 from datetime import date, datetime
 from socket import timeout
@@ -25,11 +24,11 @@ logger = logging.getLogger(__name__)
 class CommonSetup(aetest.CommonSetup):
     
     @aetest.subsection
-    def ssh_connection_with_iperf_servet(self, IPAddress, UserName, password, server_command):
+    def ssh_connection_with_iperf_servet(self, ssh_ipaddress, ssh_username, ssh_password, server_command):
         logger.info('>>>>>>>>>>>>>>>>>>>>>>>>Lounching SSH with paramiko<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
         ssh_client = paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh_client.connect(hostname = '10.0.0.10' ,username='fdmytro', password='eternity', look_for_keys=False)
+        ssh_client.connect(hostname = ssh_ipaddress ,username=ssh_username, password=ssh_password, look_for_keys=False)
         parameters.update({'ssh_client': ssh_client })
         serv_stdin, serv_stdout, serv_sterr = ssh_client.exec_command(server_command)
         parameters.update({'serv_stdout': serv_stdout })
@@ -43,19 +42,19 @@ class CommonSetup(aetest.CommonSetup):
         t = xtelnet.session()
         ip = BBB_ip_addreess
         t.connect(ip, username=BBB_user_name, password=BBB_user_passwd, p=23, timeout=10)
-        someoutput=t.execute('cd / && ls')
+        tout2=t.execute('cd / && ls')
         parameters.update({'t':t}) 
-        logger.info(someoutput)
+        logger.info(tout2)
         
       
 class MYTESTSUITE(aetest.Testcase):
 
     @aetest.test
-    def traffic_capture_1(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t, traffic, traffic1, script):
+    def traffic_capture_1(self, steps, ssh_ipaddress, util, flag1, flag2, flag3, flag4, t, traffic, bandwidth, script):
         
-        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4, traffic, traffic1], stdout=PIPE, stderr=PIPE)
+        client_process = subprocess.Popen([util, flag1, ssh_ipaddress, flag2, flag3, flag4, traffic, bandwidth], stdout=PIPE, stderr=PIPE)
         
-        tout = t.execute(f"sh {script}", read_retries=60)
+        tout = t.execute(f"sh {script}", read_retries=70)
         
 
         data =json.loads(client_process.stdout.read().decode('ascii').strip("\n"))
@@ -70,8 +69,7 @@ class MYTESTSUITE(aetest.Testcase):
                     step.failed("Trafic is not running")
         
         logger.info(tout[:60])
-        logger.info(tout)
-        logger.info(type(tout))
+        logger.info(tout[-100:-1])
         logger.info(len(tout))
         
         with steps.start(
@@ -112,16 +110,16 @@ class MYTESTSUITE(aetest.Testcase):
 
     
     @aetest.test
-    def tftp_transfer_verification_3(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t, traffic, traffic1, script):
-        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4, traffic, traffic1], stdout=PIPE, stderr=PIPE)
+    def tftp_transfer_verification_3(self, steps, ssh_ipaddress, util, flag1, flag2, flag3, flag4, t, traffic, bandwidth, script):
+        client_process = subprocess.Popen([util, flag1, ssh_ipaddress, flag2, flag3, flag4, traffic, bandwidth], stdout=PIPE, stderr=PIPE)
         
-        tout = t.execute(f"sh {script}", read_retries=60)
+        tout = t.execute(f"sh {script}", read_retries=70)
         
 
         data =json.loads(client_process.stdout.read().decode('ascii').strip("\n"))
         client_process.wait()
         
-        logger.info(tout)
+        
         with steps.start(
                 "Run command 'Iperf3 client"
             ) as step:
@@ -131,8 +129,7 @@ class MYTESTSUITE(aetest.Testcase):
                     step.failed("Trafic is not running")
         
         logger.info(tout[:60])
-        logger.info(tout)
-        logger.info(type(tout))
+        logger.info(tout[-100:-1])
         logger.info(len(tout))
         file = os.stat('/srv/tftp/tcpdump_outTCP.pcap')
         
@@ -170,15 +167,14 @@ class MYTESTSUITE(aetest.Testcase):
         
    
     @aetest.test
-    def Verification_of_the_messages_in_the_logs_7(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t, traffic, traffic1, script):
-        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4, traffic, traffic1], stdout=PIPE, stderr=PIPE)
+    def Verification_of_the_messages_in_the_logs_7(self, steps, ssh_ipaddress, util, flag1, flag2, flag3, flag4, t, traffic, bandwidth, script):
+        client_process = subprocess.Popen([util, flag1, ssh_ipaddress, flag2, flag3, flag4, traffic, bandwidth], stdout=PIPE, stderr=PIPE)
         
-        tout = t.execute(f"sh {script}", read_retries=60)
+        tout = t.execute(f"sh {script}", read_retries=70)
     
         data =json.loads(client_process.stdout.read().decode('ascii').strip("\n"))
         client_process.wait()
         
-        logger.info(tout)
         with steps.start(
                 "Run command 'Iperf3 client"
             ) as step:
@@ -188,8 +184,7 @@ class MYTESTSUITE(aetest.Testcase):
                     step.failed("Trafic is not running")
         
         logger.info(tout[:60])
-        logger.info(tout)
-        logger.info(type(tout))
+        logger.info(tout[-100:-1])
         logger.info(len(tout))
         
         
@@ -233,16 +228,16 @@ class MYTESTSUITE(aetest.Testcase):
       
       
     @aetest.test
-    def traffic_load_50_mb_9(self, steps, IPAddress, util, flag1, flag2, flag3, flag4, t, traffic, traffic1, script):   
-        client_process = subprocess.Popen([util, flag1, IPAddress, flag2, flag3, flag4, traffic, traffic1], stdout=PIPE, stderr=PIPE)
+    def traffic_load_50_mb_9(self, steps, ssh_ipaddress, util, flag1, flag2, flag3, flag4, t, traffic, bandwidth, script):   
+        client_process = subprocess.Popen([util, flag1, ssh_ipaddress, flag2, flag3, flag4, traffic, bandwidth], stdout=PIPE, stderr=PIPE)
         
-        tout = t.execute(f"sh {script}", read_retries=60)
+        tout = t.execute(f"sh {script}", read_retries=70)
         
 
         data =json.loads(client_process.stdout.read().decode('ascii').strip("\n"))
         client_process.wait()
         
-        logger.info(tout)
+        
         with steps.start(
                 "Run command 'Iperf3 client"
             ) as step:
@@ -252,8 +247,7 @@ class MYTESTSUITE(aetest.Testcase):
                     step.failed("Trafic is not running")
         
         logger.info(tout[:60])
-        logger.info(tout)
-        logger.info(type(tout))
+        logger.info(tout[-100:-1])
         logger.info(len(tout))
         
         with steps.start(
@@ -299,7 +293,7 @@ class MYTESTSUITE(aetest.Testcase):
         t.close()
         
         with steps.start(
-                "reboot devive"
+                "Reboot device"
             ) as step:
                 if e == 'BBB rebooted':
                     step.passed(f"The device is rebooted")
@@ -311,13 +305,13 @@ class MYTESTSUITE(aetest.Testcase):
         ip = BBB_ip_addreess
         t2.connect(ip, username=BBB_user_name, password=BBB_user_passwd, p=23, timeout=5)
         
-        someoutput=t2.execute('cd / && ls -lah')
-        logger.info(someoutput)
+        tout2=t2.execute('cd / && ls -lah')
+        logger.info(tout2)
 
         with steps.start(
                 "Run 'ls -lah'"
             ) as step:
-                if 'tcpdump_out.pcap' in someoutput:
+                if 'tcpdump_out.pcap' in tout2:
                     step.passed(f"System recovered. File is present")
                 else:
                     step.failed("File is not preset ...")

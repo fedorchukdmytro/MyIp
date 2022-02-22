@@ -2,12 +2,14 @@
 
 
 parameters:
-    IPAddress      : 10.0.0.10
-    UserName       : fdmytro
-    password       : eternity
+    ssh_ipaddress      : 10.0.0.10
+    ssh_username       : fdmytro
+    ssh_password       : eternity
+    
     BBB_ip_addreess: '10.0.0.3'
     BBB_user_name: 'root'
     BBB_user_passwd: '1'
+    
     server_command: iperf3 -s -4
     util  : iperf3
     flag1 : -c
@@ -16,20 +18,7 @@ parameters:
     flag4 : '70'
     flag5 : -u
     traffic : -b
-    traffic1 : '50000000'
+    bandwidth : '50000000'
     script: '/bin/sniffer.sh'
         
 
-
-# testcases:
-#     TrafficCatpture:
-#         uid: MYTESTSUITE
-#         groups: [demo, datafile, awesomeness]
-
-#         parameters:
-#             tc_param_a: 300
-#             tc_param_b: 400
-
-#         class_var_a: [1,2,3,4,5]
-#         class_var_b: datafile feature is just that awesome
-       
